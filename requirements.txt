@@ -4,4 +4,4 @@
 streamlit
 pillow
 openai
-plotly
+plotly-express
