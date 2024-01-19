@@ -2,15 +2,62 @@ import openai
 import time
 import streamlit as st
 from assistants_helper import *
+from dashboard_utils import *
 import base64
 from PIL import Image
 
 def main():
+    st.sidebar.title('Navigation')
+    page_options = ['Dashboard', 'Chatbot']
+    selected_page = st.sidebar.selectbox('Select Page', page_options)
+
+    if 'Dashboard' in selected_page:
+        dashboard()
+    if 'Chatbot' in selected_page:
+        chatbot()
+
+
+def dashboard():
+    st.title(" :bar_chart: Sample Dashboard")
+    st.markdown('<style>div.block-container{padding-top:1rem;}</style>',unsafe_allow_html=True)
+    st.write("**This will be your customizable dashboard.**")
+
+    ## Plot 1 - Top 7 companies with the largest asset size
+    # Create a filter for countries
+    allowed_countries = ['USA', 'China', 'Japan', 'Germany', 'France', 'Britain', 'South Korea', 'Netherlands', 'Switzerland', 'Canada']
+    with st.expander("Filter"):
+        selected_countries = st.multiselect("Pick your Country or leave blank", allowed_countries)
+
+    fig = biggest_assets(selected_countries)
+    st.plotly_chart(fig,use_container_width=True, height = 200)
+
+    st.divider()
+
+    ### Current Rank and Previous Rank of top 10 companies
+    fig = rank_comparison()
+    st.plotly_chart(fig,use_container_width=True, height = 200)
+
+    st.divider()
+
+    ### Geo plotting 
+    allowed_params= ['Assets($millions)', 'Number of Employees', 'Revenues($millions)', 'Profits($millions)']
+    # Add the radio buttons
+    st.write('<style>div.row-widget.stRadio > div{flex-direction:row;justify-content: center;} </style>', unsafe_allow_html=True)
+
+    st.write('<style>div.st-bf{flex-direction:column;} div.st-ag{font-weight:bold;padding-left:2px;}</style>', unsafe_allow_html=True)
+
+    selected_metric = st.radio("Select your metric:", allowed_params, key="radio", index=1, format_func=lambda x: x)
+    fig = plot_geo_locs(selected_metric)
+    st.plotly_chart(fig,use_container_width=True, height = 200)
+
+
+def chatbot():
+    st.title("Chat-with-your-financials")
+    st.markdown('<style>div.block-container{padding-top:1rem;}</style>',unsafe_allow_html=True)
 
     img = Image.open('./logo1.png')
-    resized_image = img.resize((200, 200))
-    st.image(resized_image)
-    st.title("Chat-with-your-financials")
+    img_resized = img.resize((200,200))
+    st.image(img_resized)
     st.write("**Welcome to chat with your financials. This is a chatbot that can help you with your financial queries.**")
     # Writing a portion of the text in a different color
     st.markdown("You can ask questions like <span style='color: green;'>Show me the top 5 companies with the highest assets</span>", unsafe_allow_html=True)
