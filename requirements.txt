@@ -4,4 +4,4 @@
 streamlit
 pillow
 openai
-sentence_transformers
+plotly
